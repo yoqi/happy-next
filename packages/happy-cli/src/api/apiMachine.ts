@@ -161,7 +161,7 @@ type MachineRpcHandlers = {
         runId: string;
         taskId: string;
         dispatchToken: string;
-        provider: 'claude' | 'codex' | 'gemini' | 'qoder';
+        provider: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity';
         executionType: 'initial' | 'resume';
         childSessionId?: string;
         model?: string;

@@ -12,7 +12,7 @@ This document summarizes what changed in Happy Next compared to the original Hap
 | Apple Watch | Permission notifications you can act on, a watch app with your sessions, messages and dictated or quick replies, and a complication counting the sessions that need you |
 | Orchestrator | Multi-agent DAG task scheduling with per-task model, working directory, real-time monitoring, execution history, and linked run navigation |
 | Pending queue | Server-side message queue with auto-dispatch, queue panel UI, send-now, plus edit and pause/draft of queued messages |
-| Multi-agent | Claude Code, Codex, Gemini, and Qoder are all first-class agents |
+| Multi-agent | Claude Code, Codex, Gemini, Qoder, and Antigravity are all first-class agents |
 | GitHub | Connected repositories, issue and pull request workflows, comments, and linked AI sessions |
 | Voice | Volcano (Doubao) real-time voice gateway with streaming speech, native iOS voice calls, selectable timbre/speech rate, E2E-encrypted settings sync, plus streaming read-aloud (TTS) of AI replies with a global playback queue and floating player |
 | Workspaces | Multi-repo worktree creation, switching, archiving, and PR flows |

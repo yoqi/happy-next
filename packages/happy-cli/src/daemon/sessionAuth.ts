@@ -7,11 +7,13 @@ const authVariables = {
   gemini: [],
   // Qoder CLI only uses its own `qodercli login`.
   qoder: [],
+  // Antigravity CLI caches credentials from `agy acp --login`.
+  antigravity: [],
 } as const;
 
 export function getUnexpandedSessionAuthVariables(
   environment: Record<string, string>,
-  agent: 'claude' | 'codex' | 'gemini' | 'qoder' = 'claude',
+  agent: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity' = 'claude',
 ): string[] {
   return authVariables[agent].filter(name => environment[name]?.includes('${'));
 }

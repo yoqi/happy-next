@@ -44,6 +44,7 @@ export const MetadataSchema = z.object({
     claudeSessionId: z.string().optional(), // Claude Code session ID
     codexSessionId: z.string().optional(), // Codex CLI conversation ID
     qoderSessionId: z.string().optional(), // Qoder CLI (ACP) session ID
+    antigravitySessionId: z.string().optional(), // Antigravity CLI (ACP) session ID
     tools: z.array(z.string()).optional(),
     slashCommands: z.array(z.string()).optional(),
     slashCommandMetadata: z.array(z.object({

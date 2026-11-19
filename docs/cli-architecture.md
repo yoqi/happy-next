@@ -43,7 +43,7 @@ graph TB
 - **API client:** `src/api` handles HTTP + Socket.IO, encryption, and RPC.
 - **Daemon:** `src/daemon` runs in the background, spawns sessions, and maintains machine state.
 - **Persistence/config:** `src/persistence.ts` + `src/configuration.ts` manage local state in `~/.happy-next`.
-- **Agents:** `src/claude`, `src/codex`, `src/gemini` provide provider-specific runners.
+- **Agents:** `src/claude`, `src/codex`, `src/gemini`, `src/qoder`, and `src/antigravity` provide provider-specific runners (Gemini, Qoder and Antigravity over ACP).
 
 ## CLI entry flow
 

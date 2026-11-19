@@ -113,6 +113,8 @@ function buildCatalogIndex(catalog: ModelCatalog) {
         gemini: [MODEL_MODE_DEFAULT, ...activeModels('gemini').map((model) => model.id)],
         // Qoder models are per-account and come from the ACP session at runtime, not the catalog.
         qoder: [MODEL_MODE_DEFAULT, ...activeModels('qoder').map((model) => model.id)],
+        // Antigravity models are per-account and come from the ACP session at runtime, not the catalog.
+        antigravity: [MODEL_MODE_DEFAULT, ...activeModels('antigravity').map((model) => model.id)],
     };
 
     const familyOptions: Record<AgentFlavor, readonly ModelOption[]> = {
@@ -120,6 +122,7 @@ function buildCatalogIndex(catalog: ModelCatalog) {
         codex: [DEFAULT_MODEL_OPTION, ...activeModels('codex').map(toModelOption)],
         gemini: [DEFAULT_MODEL_OPTION, ...activeModels('gemini').map(toModelOption)],
         qoder: [DEFAULT_MODEL_OPTION, ...activeModels('qoder').map(toModelOption)],
+        antigravity: [DEFAULT_MODEL_OPTION, ...activeModels('antigravity').map(toModelOption)],
     };
 
     const contextWindows = new Map<string, number>(catalog.models.map((model) => [model.id, model.contextWindow]));
@@ -138,6 +141,7 @@ function buildCatalogIndex(catalog: ModelCatalog) {
             codex: new Set(modesByAgent.codex),
             gemini: new Set(modesByAgent.gemini),
             qoder: new Set(modesByAgent.qoder),
+            antigravity: new Set(modesByAgent.antigravity),
         } satisfies Record<AgentFlavor, Set<ModelMode>>,
         familyOptions,
         contextWindows,
@@ -335,7 +339,7 @@ export function resolveModelSelectionForFlavor(flavor: string | null | undefined
         if (parsed.family === MODEL_MODE_DEFAULT) return { model: modelMode, reasoningEffort: null };
         return { model: parsed.family, reasoningEffort: parsed.effort, ...(parsed.contextWindow ? { contextWindow: parsed.contextWindow } : {}) };
     }
-    if (flavor === 'gemini') return { model: modelMode, reasoningEffort: null };
+    if (flavor === 'gemini' || flavor === 'antigravity') return { model: modelMode, reasoningEffort: null };
     return { model: null, reasoningEffort: null };
 }
 
@@ -409,6 +413,8 @@ const AGENT_DEFAULT_CONTEXT_WINDOWS: Record<AgentFlavor, number> = {
     codex: 272_000,
     gemini: 1_000_000,
     qoder: 200_000,
+    // Antigravity is Gemini-based with a 1M context window.
+    antigravity: 1_000_000,
 };
 
 /**

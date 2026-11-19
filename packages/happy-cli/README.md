@@ -47,6 +47,16 @@ Start a Qoder CLI session with remote control capabilities.
 
 **First time setup:** install [Qoder CLI](https://qoder.com) and sign in once with `qodercli login` (or `qoderclicn login` for the China build). Qoder uses your Qoder account, so there is no `happy connect qoder` step.
 
+### Antigravity
+
+```bash
+happy antigravity
+```
+
+Start a Google Antigravity CLI session over ACP with remote control capabilities.
+
+**First time setup:** install [Antigravity CLI](https://antigravity.google/) (v1.5.0+ for ACP support) and sign in once with `agy acp --login`. Antigravity reuses your CLI credentials, so there is no `happy connect antigravity` step. Set `HAPPY_ANTIGRAVITY_PATH` if `agy` is not on your PATH.
+
 ## Commands
 
 ### Main Commands
@@ -57,6 +67,7 @@ Start a Qoder CLI session with remote control capabilities.
 - `happy gemini` – Start Gemini CLI session
 - `happy codex` – Start Codex mode
 - `happy qoder` – Start Qoder CLI session
+- `happy antigravity` – Start Google Antigravity CLI session
 
 ### Utility Commands
 

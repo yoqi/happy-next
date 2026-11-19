@@ -402,6 +402,7 @@ export type Metadata = {
   claudeSessionId?: string, // Claude Code session ID
   codexSessionId?: string,
   qoderSessionId?: string, // Qoder ACP session id, restored with session/load
+  antigravitySessionId?: string, // Antigravity ACP session id, restored with session/load
   tools?: string[],
   slashCommands?: string[],
   slashCommandMetadata?: Array<{

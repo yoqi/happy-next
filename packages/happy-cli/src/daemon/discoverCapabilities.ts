@@ -15,7 +15,7 @@ import { addOrchestratorSlashCommands } from '@/orchestrator/slashCommands';
 import { listQoderCommands } from '@/qoder/sessions';
 import { logger } from '@/ui/logger';
 
-export type DiscoverCapabilitiesAgent = 'claude' | 'codex' | 'gemini' | 'qoder';
+export type DiscoverCapabilitiesAgent = 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity';
 
 export async function discoverCapabilities(
     agent: DiscoverCapabilitiesAgent,
@@ -31,6 +31,7 @@ export async function discoverCapabilities(
             skills: discoverCodexSkills(directory, homeDir),
         })),
         gemini: () => addBuiltinSlashCommands({}),
+        antigravity: () => addBuiltinSlashCommands({}),
         qoder: async () => {
             const commands = await listQoderCommands(directory).catch((error) => {
                 logger.debug('[Qoder] Could not list commands', error);

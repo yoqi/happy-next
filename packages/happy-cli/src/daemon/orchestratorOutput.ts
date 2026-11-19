@@ -70,6 +70,37 @@ export function extractGeminiSessionId(stdout: string): string | null {
   return null;
 }
 
+/**
+ * `agy -p --output-format json` prints one JSON document with a `conversation_id`,
+ * which is the id to pass back with `--conversation` when resuming the task.
+ */
+export function extractAntigravitySessionId(stdout: string): string | null {
+  const trimmed = stdout.trim();
+  if (!trimmed) return null;
+  try {
+    const parsed = JSON.parse(trimmed) as { conversation_id?: unknown };
+    if (typeof parsed.conversation_id === 'string') {
+      const id = parsed.conversation_id.trim();
+      return id.length > 0 ? id : null;
+    }
+  } catch (_error) {
+    // A partial JSON document: line-based parsing picks it up once complete.
+  }
+  for (const line of stdout.split(/\r?\n/)) {
+    const candidate = line.trim();
+    if (!candidate) continue;
+    try {
+      const parsed = JSON.parse(candidate) as { conversation_id?: unknown };
+      if (typeof parsed.conversation_id === 'string' && parsed.conversation_id.trim()) {
+        return parsed.conversation_id.trim();
+      }
+    } catch (_error) {
+      // not a complete JSON line
+    }
+  }
+  return null;
+}
+
 export function extractGeminiSessionIdFromJsonLine(line: string): string | null {
   const trimmed = line.trim();
   if (!trimmed) {

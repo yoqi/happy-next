@@ -37,7 +37,7 @@ import { awaitOrchestratorRunTerminal, notifyOrchestratorRunTerminal } from "@/a
 import { orchestratorMachineReconcile } from "@/app/orchestrator/reconcile";
 import { orchestratorCallbacksAck, orchestratorCallbacksPull, orchestratorRunCallbacksRecordTx } from "@/app/orchestrator/callbacks";
 
-const PROVIDERS = ['claude', 'codex', 'gemini', 'qoder'] as const;
+const PROVIDERS = ['claude', 'codex', 'gemini', 'qoder', 'antigravity'] as const;
 const RUN_STATUSES = ['queued', 'running', 'canceling', 'completed', 'failed', 'cancelled'] as const;
 const EXECUTION_FINAL_STATUSES = ['completed', 'failed', 'cancelled', 'timeout'] as const;
 const LIST_RUN_STATUS_FILTERS = ['active', 'terminal', ...RUN_STATUSES] as const;
@@ -1106,6 +1106,7 @@ export function orchestratorRoutes(app: Fastify) {
                     codex: getValidModelModesForAgent('codex'),
                     gemini: getValidModelModesForAgent('gemini'),
                     qoder: getValidModelModesForAgent('qoder'),
+                    antigravity: getValidModelModesForAgent('antigravity'),
                 },
                 defaults: {
                     mode: 'async',

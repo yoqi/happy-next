@@ -124,4 +124,15 @@ describe('runOneShot spawn plan', () => {
     const plan = buildSpawnPlan('qoder', 'continue', '/tmp/workdir', 'performance', 'resume', 'session-uuid');
     expect(plan.args).toEqual(['--dangerously-skip-permissions', '--resume', 'session-uuid', '-p', 'continue']);
   });
+
+  it('runs antigravity in print mode with json output and a model override', () => {
+    const plan = buildSpawnPlan('antigravity', 'hello', '/tmp/workdir', 'gemini-3-pro', 'initial');
+    expect(plan.args).toEqual(['-p', 'hello', '--output-format', 'json', '--dangerously-skip-permissions', '--model', 'gemini-3-pro']);
+    expect(plan.cwd).toBe('/tmp/workdir');
+  });
+
+  it('resumes antigravity by conversation id without a model override', () => {
+    const plan = buildSpawnPlan('antigravity', 'continue', '/tmp/workdir', undefined, 'resume', 'conversation-uuid');
+    expect(plan.args).toEqual(['-p', 'continue', '--output-format', 'json', '--dangerously-skip-permissions', '--conversation', 'conversation-uuid']);
+  });
 });

@@ -370,7 +370,7 @@ export function copySessionModeSettings(
     newSessionId: string,
 ): void {
     const flavor = originalSession.metadata?.flavor;
-    const agentType: 'claude' | 'codex' | 'gemini' | 'qoder' = (flavor === 'codex' || flavor === 'gemini' || flavor === 'qoder') ? flavor : 'claude';
+    const agentType: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity' = (flavor === 'codex' || flavor === 'gemini' || flavor === 'qoder' || flavor === 'antigravity') ? flavor : 'claude';
     sync.queueSessionModeConfigUpdate({
         sessionId: newSessionId,
         agentType,

@@ -1,11 +1,11 @@
 <div align="center"><img src="/.github/logotype-dark.png" width="400" title="Happy Next" alt="Happy Next"/></div>
 
 <h1 align="center">
-  Claude Code、Codex、Gemini 和 Qoder 的移动端和 Web 客户端
+  Claude Code、Codex、Gemini、Qoder 和 Antigravity 的移动端和 Web 客户端
 </h1>
 
 <h4 align="center">
-随时随地使用 Claude Code、Codex、Gemini 或 Qoder，端到端加密。
+随时随地使用 Claude Code、Codex、Gemini、Qoder 或 Antigravity，端到端加密。
 </h4>
 
 <div align="center">
@@ -37,7 +37,7 @@ npm i -g happy-next-cli
 ```
 
 <h3 align="center">
-第三步：用 `happy` 代替 `claude`、`codex`、`gemini` 或 `qodercli`
+第三步：用 `happy` 代替 `claude`、`codex`、`gemini`、`qodercli` 或 `agy`
 </h3>
 
 ```bash
@@ -60,18 +60,23 @@ happy gemini
 # 现在用: happy qoder
 
 happy qoder
+
+# 原来用: agy
+# 现在用: happy antigravity
+
+happy antigravity
 ```
 
 运行 `happy` 会打印一个二维码用于设备配对。
 
 - 用第一步下载的应用扫描二维码（或在浏览器中打开 [app.happy-next.com](https://app.happy-next.com/)）。
-- 前提：安装你想要控制的供应商 CLI（`claude`、`codex`、`gemini` 和/或 `qodercli`）。
+- 前提：安装你想要控制的供应商 CLI（`claude`、`codex`、`gemini`、`qodercli` 和/或 `agy` v1.5.0+）。启动 Antigravity 会话前先运行 `agy acp --login` 登录一次。
 
 <div align="center"><img src="/.github/mascot.png" width="200" title="Happy Next" alt="Happy Next"/></div>
 
 ## 🔥 为什么选择 Happy Next？
 
-- 🎛️ **Claude、Codex、Gemini 和 Qoder 的远程控制** — 四个 Agent 均为一等公民
+- 🎛️ **Claude、Codex、Gemini、Qoder 和 Antigravity 的远程控制** — 五个 Agent 均为一等公民
 - 🤖 **编排器** — 定义多 Agent 任务 DAG、自动调度执行，并查看关联的运行历史
 - ⚡ **即时设备切换** — 一键夺回控制权
 - 🔔 **推送通知** — 随时知道你的 Agent 需要关注，并可直接在通知上处理权限请求

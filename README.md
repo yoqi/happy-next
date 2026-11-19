@@ -1,11 +1,11 @@
 <div align="center"><img src="/.github/logotype-dark.png" width="400" title="Happy Next" alt="Happy Next"/></div>
 
 <h1 align="center">
-  Mobile and Web Client for Claude Code, Codex, Gemini & Qoder
+  Mobile and Web Client for Claude Code, Codex, Gemini, Qoder & Antigravity
 </h1>
 
 <h4 align="center">
-Use Claude Code, Codex, Gemini, or Qoder from anywhere with end-to-end encryption.
+Use Claude Code, Codex, Gemini, Qoder, or Antigravity from anywhere with end-to-end encryption.
 </h4>
 
 <div align="center">
@@ -35,7 +35,7 @@ npm i -g happy-next-cli
 ```
 
 <h3 align="center">
-Step 3: Start using `happy` instead of `claude`, `codex`, `gemini`, or `qodercli`
+Step 3: Start using `happy` instead of `claude`, `codex`, `gemini`, `qodercli`, or `agy`
 </h3>
 
 ```bash
@@ -58,18 +58,23 @@ happy gemini
 # Use: happy qoder
 
 happy qoder
+
+# Instead of: agy
+# Use: happy antigravity
+
+happy antigravity
 ```
 
 Running `happy` prints a QR code for device pairing.
 
 - Scan the QR code with the app you downloaded in Step 1 (or open [app.happy-next.com](https://app.happy-next.com/) in a browser).
-- Prerequisite: install the vendor CLI(s) you want to control (`claude`, `codex`, `gemini`, and/or `qodercli`).
+- Prerequisite: install the vendor CLI(s) you want to control (`claude`, `codex`, `gemini`, `qodercli`, and/or `agy` v1.5.0+). Sign in once with `agy acp --login` before starting an Antigravity session.
 
 <div align="center"><img src="/.github/mascot.png" width="200" title="Happy Next" alt="Happy Next"/></div>
 
 ## 🔥 Why Happy Next?
 
-- 🎛️ **Remote control for Claude, Codex, Gemini & Qoder** - All four agents as first-class citizens
+- 🎛️ **Remote control for Claude, Codex, Gemini, Qoder & Antigravity** - All five agents as first-class citizens
 - 🤖 **Orchestrator** - Define multi-agent task DAGs, auto-schedule execution, and inspect linked run history
 - ⚡ **Instant device handoff** - Take back control with a single keypress
 - 🔔 **Push notifications** - Know when your agent needs attention, and answer permission requests from the notification

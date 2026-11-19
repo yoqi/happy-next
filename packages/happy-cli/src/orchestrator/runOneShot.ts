@@ -5,6 +5,7 @@ import { codexPackage } from '@/codex/package';
 import { codexFastModeArgs, resolveCodexRuntime } from '@/codex/codexRuntime';
 import { logger } from '@/ui/logger';
 import { QODER_SDK_ISOLATION_ENV, resolveQoderCommand } from '@/qoder/constants';
+import { resolveAntigravityCommand } from '@/antigravity/constants';
 import { MODEL_MODE_DEFAULT, isModelModeForAgent, parseClaudeModelMode, resolveModelSelectionForFlavor, splitFastModeSuffix } from 'happy-wire';
 import {
   ORCHESTRATOR_ENV_KEYS,
@@ -176,6 +177,22 @@ export function buildSpawnPlan(
         args: qoderArgs,
         cwd: workingDirectory,
         env: { ...process.env, ...QODER_SDK_ISOLATION_ENV },
+      };
+    }
+    case 'antigravity': {
+      // `agy -p` prints one answer to stdout; `--output-format json` also reports usage.
+      // Headless runs cannot answer permission prompts, so approvals are skipped up front.
+      const antigravityArgs = ['-p', prompt, '--output-format', 'json', '--dangerously-skip-permissions'];
+      if (executionType === 'resume') {
+        antigravityArgs.push('--conversation', childSessionId!);
+      } else if (normalizedModelMode) {
+        antigravityArgs.push('--model', normalizedModelMode);
+      }
+      return {
+        command: resolveAntigravityCommand(),
+        args: antigravityArgs,
+        cwd: workingDirectory,
+        env: { ...process.env },
       };
     }
     default:

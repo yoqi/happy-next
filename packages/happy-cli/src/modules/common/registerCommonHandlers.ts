@@ -131,7 +131,7 @@ export interface SpawnSessionOptions {
     forkedFrom?: { sessionId?: string; title?: string; contextWindowSize?: number };
     skipForkSession?: boolean;
     approvedNewDirectoryCreation?: boolean;
-    agent?: 'claude' | 'codex' | 'gemini' | 'qoder';
+    agent?: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity';
     token?: string;
     // Extra environment variables for the agent process (e.g. a GitHub token)
     environmentVariables?: Record<string, string>;

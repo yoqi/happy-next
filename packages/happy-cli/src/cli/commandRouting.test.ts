@@ -45,6 +45,13 @@ describe('resolveCliInvocation', () => {
     });
   });
 
+  it('routes the antigravity command', () => {
+    expect(resolveCliInvocation(['antigravity'])).toEqual({
+      kind: 'happy-command',
+      command: 'antigravity',
+    });
+  });
+
   it('rejects a misspelled command and suggests the intended command', () => {
     expect(resolveCliInvocation(['deamon', 'start'])).toEqual({
       kind: 'unknown-command',

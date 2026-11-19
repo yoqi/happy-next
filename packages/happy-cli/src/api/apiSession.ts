@@ -82,9 +82,9 @@ export type ACPMessageData =
     // Usage/metrics
     | { type: 'token_count';[key: string]: unknown };
 
-export type ACPProvider = 'gemini' | 'codex' | 'claude' | 'opencode' | 'qoder';
+export type ACPProvider = 'gemini' | 'codex' | 'claude' | 'opencode' | 'qoder' | 'antigravity';
 
-type OrchestratorProvider = 'claude' | 'codex' | 'gemini' | 'qoder';
+type OrchestratorProvider = 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity';
 
 type OrchestratorSubmitTask = {
     taskKey?: string;

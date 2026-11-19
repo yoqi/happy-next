@@ -82,12 +82,12 @@ ${ORCHESTRATOR_PUBLIC_MODE}
 
 ${ORCHESTRATOR_CORE_GUIDANCE}
 
-Explicit entries: \`/orchestrator:claude\`, \`/orchestrator:codex\`, \`/orchestrator:gemini\`, and
-\`/orchestrator:qoder\` select the primary provider. A run may still mix providers or use task
-dependencies when appropriate.
+Explicit entries: \`/orchestrator:claude\`, \`/orchestrator:codex\`, \`/orchestrator:gemini\`,
+\`/orchestrator:qoder\`, and \`/orchestrator:antigravity\` select the primary provider. A run may
+still mix providers or use task dependencies when appropriate.
 `;
 
-export const ORCHESTRATOR_PROVIDERS = ['claude', 'codex', 'gemini', 'qoder'] as const;
+export const ORCHESTRATOR_PROVIDERS = ['claude', 'codex', 'gemini', 'qoder', 'antigravity'] as const;
 
 export type OrchestratorProvider = typeof ORCHESTRATOR_PROVIDERS[number];
 

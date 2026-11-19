@@ -7,6 +7,7 @@ import { startModelCatalogSync } from '@/api/modelCatalog';
 import { TrackedSession } from './types';
 import { getUnexpandedSessionAuthVariables } from './sessionAuth';
 import { QODER_RESUME_SESSION_ID_ENV } from '@/qoder/constants';
+import { ANTIGRAVITY_RESUME_SESSION_ID_ENV } from '@/antigravity/constants';
 import { MachineMetadata, DaemonState, Metadata } from '@/api/types';
 import { SpawnSessionOptions, SpawnSessionResult } from '@/modules/common/registerCommonHandlers';
 import { logger } from '@/ui/logger';
@@ -41,7 +42,7 @@ import {
   type OrchestratorFinishStatus,
 } from '@/orchestrator/common';
 import { createOrchestratorEnvelopeOpener, type OrchestratorEnvelopeOpener } from '@/orchestrator/seal';
-import { extractCodexSessionId, extractGeminiSessionId, extractGeminiSessionIdFromJsonLine, normalizeGeminiOutputText } from './orchestratorOutput';
+import { extractAntigravitySessionId, extractCodexSessionId, extractGeminiSessionId, extractGeminiSessionIdFromJsonLine, normalizeGeminiOutputText } from './orchestratorOutput';
 import { createOrchestratorShellExecutor, reportWithRetry } from './orchestratorShell';
 import { createOrchestratorTransferExecutor } from './orchestratorTransfer';
 import { dropSessionEnv } from './sessionEnv';
@@ -406,6 +407,9 @@ export async function startDaemon(): Promise<void> {
                 break;
               }
             }
+          } else if (payload.provider === 'antigravity' && payload.executionType === 'initial') {
+            const parsed = extractAntigravitySessionId(execution.stdout);
+            if (parsed) recordDetectedChildSessionId(execution, parsed);
           }
         }
       });
@@ -614,6 +618,9 @@ export async function startDaemon(): Promise<void> {
         if (resumeSessionId && options.agent === 'qoder') {
           extraEnv[QODER_RESUME_SESSION_ID_ENV] = resumeSessionId;
         }
+        if (resumeSessionId && options.agent === 'antigravity') {
+          extraEnv[ANTIGRAVITY_RESUME_SESSION_ID_ENV] = resumeSessionId;
+        }
         if (resumeSessionId && options.agent === 'codex') {
           extraEnv.HAPPY_CODEX_RESUME_FILE = resumeSessionId;
           extraEnv.HAPPY_CODEX_BACKFILL = '1';
@@ -740,7 +747,7 @@ export async function startDaemon(): Promise<void> {
 
           // Construct command for the CLI
           const cliPath = join(projectPath(), 'dist', 'index.mjs');
-          // Determine agent command - support claude, codex, gemini and qoder
+          // Determine agent command - support claude, codex, gemini, qoder and antigravity
           const agent = options.agent ?? 'claude';
           const forkFlag = skipForkSession ? '' : ' --fork-session';
           const resumeArgs = resumeSessionId && isClaudeAgent ? ` --resume ${resumeSessionId}${forkFlag}` : '';
@@ -842,6 +849,9 @@ export async function startDaemon(): Promise<void> {
               break;
             case 'qoder':
               agentCommand = 'qoder';
+              break;
+            case 'antigravity':
+              agentCommand = 'antigravity';
               break;
             default:
               return {
