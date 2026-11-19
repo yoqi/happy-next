@@ -52,7 +52,7 @@ export function useSessionUpgrade(session: Session | null | undefined) {
             // Fork and resume — mirrors the "resume session" flow exactly
             const flavor = session.metadata?.flavor;
             let resumeSessionId: string | undefined;
-            let agent: 'claude' | 'codex' | 'gemini' | 'qoder' = 'claude';
+            let agent: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity' = 'claude';
 
             if (flavor === 'gemini') {
                 const forkResult = await machineForkGeminiSession(machineId, session.id);

@@ -119,13 +119,13 @@ interface AgentInputProps {
     };
     alwaysShowContextSize?: boolean;
     onFileViewerPress?: () => void;
-    agentType?: 'claude' | 'codex' | 'gemini' | 'qoder';
+    agentType?: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity';
     // Models offered by the agent itself (Qoder lists them per account over ACP), as the machine reports
     // them: with each model's efforts and Qoder's own description. A session's list still comes from metadata.models.
     agentModels?: QoderPickerModel[];
     // New sessions only: the agents to choose from, offered as the first tab of the settings overlay.
-    availableAgents?: readonly ('claude' | 'codex' | 'gemini' | 'qoder')[];
-    onAgentChange?: (agent: 'claude' | 'codex' | 'gemini' | 'qoder') => void;
+    availableAgents?: readonly ('claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity')[];
+    onAgentChange?: (agent: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity') => void;
     machineName?: string | null;
     onMachineClick?: () => void;
     currentPath?: string | null;
@@ -174,6 +174,7 @@ const agentFlavorIcons = {
     codex: require('@/assets/images/icon-gpt.png'),
     gemini: require('@/assets/images/icon-gemini.png'),
     qoder: require('@/assets/images/icon-qoder.png'),
+    antigravity: require('@/assets/images/icon-antigravity.png'),
 };
 
 // The vendor mark keeps one slot across flavors so the row cannot shift, and only the artwork
@@ -189,6 +190,7 @@ const agentMarkArtworkSize: Record<keyof typeof agentFlavorIcons, number> = {
     codex: 10,
     gemini: 12,
     qoder: 11,
+    antigravity: 12,
 };
 
 // Vendor marks at full size, as on the agent button in the input and the agent picker rows. Same
@@ -200,6 +202,7 @@ const agentIconArtworkSize: Record<keyof typeof agentFlavorIcons, number> = {
     codex: 15,
     gemini: 18,
     qoder: 16,
+    antigravity: 18,
 };
 
 // The settings overlay grows out of the input below it and sinks back into it when closed. These are
@@ -830,9 +833,10 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
     const isCodex = props.metadata?.flavor === 'codex' || props.agentType === 'codex';
     const isGemini = props.metadata?.flavor === 'gemini' || props.agentType === 'gemini';
     const isQoder = props.metadata?.flavor === 'qoder' || props.agentType === 'qoder';
-    const isClaude = !isCodex && !isGemini && !isQoder;
+    const isAntigravity = props.metadata?.flavor === 'antigravity' || props.agentType === 'antigravity';
+    const isClaude = !isCodex && !isGemini && !isQoder && !isAntigravity;
     // Vendor mark beside the model label. Claude is the fallback for sessions without a flavor.
-    const agentFlavorKey: keyof typeof agentFlavorIcons = isCodex ? 'codex' : isGemini ? 'gemini' : isQoder ? 'qoder' : 'claude';
+    const agentFlavorKey: keyof typeof agentFlavorIcons = isCodex ? 'codex' : isGemini ? 'gemini' : isQoder ? 'qoder' : isAntigravity ? 'antigravity' : 'claude';
 
     const permissionModeOptions: PermissionMode[] = isCodex
         ? ['default', 'read-only', 'on-failure', 'full-auto']
@@ -840,7 +844,9 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
             ? ['default', 'auto_edit', 'plan', 'yolo']
             : isQoder
                 ? ['default', 'acceptEdits', 'auto', 'yolo']
-                : ['default', 'acceptEdits', 'plan', 'auto', 'bypassPermissions'];
+                : isAntigravity
+                    ? ['default', 'acceptEdits', 'auto', 'plan', 'yolo']
+                    : ['default', 'acceptEdits', 'plan', 'auto', 'bypassPermissions'];
 
     const getPermissionModeLabel = React.useCallback((mode: PermissionMode | undefined, badge = false): string => {
         if (!mode) return '';
@@ -858,7 +864,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
             if (mode === 'yolo') return badge ? t('agentInput.geminiPermissionMode.badgeYolo') : t('agentInput.geminiPermissionMode.yolo');
             return '';
         }
-        if (isQoder) {
+        if (isQoder || isAntigravity) {
             if (mode === 'default') return t('agentInput.qoderPermissionMode.default');
             if (mode === 'acceptEdits') return badge ? t('agentInput.qoderPermissionMode.badgeAcceptEdits') : t('agentInput.qoderPermissionMode.acceptEdits');
             if (mode === 'auto') return badge ? t('agentInput.qoderPermissionMode.badgeAuto') : t('agentInput.qoderPermissionMode.auto');
@@ -872,9 +878,9 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
         if (mode === 'bypassPermissions') return badge ? t('agentInput.permissionMode.badgeBypassAllPermissions') : t('agentInput.permissionMode.bypassPermissions');
         if (mode === 'plan') return badge ? t('agentInput.permissionMode.badgePlanMode') : t('agentInput.permissionMode.plan');
         return '';
-    }, [isCodex, isGemini, isQoder]);
+    }, [isCodex, isGemini, isQoder, isAntigravity]);
 
-    const permissionModeDescriptions: Partial<Record<PermissionMode, string>> = isQoder ? {
+    const permissionModeDescriptions: Partial<Record<PermissionMode, string>> = isQoder || isAntigravity ? {
         default: t('agentInput.qoderPermissionMode.defaultDescription'),
         acceptEdits: t('agentInput.qoderPermissionMode.acceptEditsDescription'),
         auto: t('agentInput.qoderPermissionMode.autoDescription'),
@@ -1061,7 +1067,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
         return true;
     };
     const modelOptions = React.useMemo<Array<{ value: ModelMode; label: string; shortLabel: string; description: string; trailing?: string }>>(() => {
-        if (isGemini) return localizeModelOptions(getModelFamilyOptions('gemini'));
+        if (isGemini || isAntigravity) return localizeModelOptions(getModelFamilyOptions('gemini'));
         const cliDefault = { value: MODEL_MODE_DEFAULT, label: t('agentInput.model.useCliConfigured'), shortLabel: 'CLI', description: t('agentInput.model.useCliDefaults') };
         if (isQoder) {
             // Qoder ends each tag list with the credit multiplier ("Vision · 0.50x Credit"); it is shown on the right as "0.5x".
@@ -1078,7 +1084,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
             });
         }
         return [cliDefault];
-    }, [isGemini, isQoder, qoderModels, modelCatalog]);
+    }, [isGemini, isAntigravity, isQoder, qoderModels, modelCatalog]);
 
     const currentModelLabel = React.useMemo(() => {
         if (isCodex) {
@@ -2635,7 +2641,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
                                             fontWeight: '600',
                                             ...Typography.default('semiBold'),
                                         }}>
-                                            {props.agentType === 'claude' ? t('agentInput.agent.claude') : props.agentType === 'codex' ? t('agentInput.agent.codex') : props.agentType === 'qoder' ? t('agentInput.agent.qoder') : t('agentInput.agent.gemini')}
+                                            {props.agentType === 'claude' ? t('agentInput.agent.claude') : props.agentType === 'codex' ? t('agentInput.agent.codex') : props.agentType === 'qoder' ? t('agentInput.agent.qoder') : props.agentType === 'antigravity' ? t('agentInput.agent.antigravity') : t('agentInput.agent.gemini')}
                                         </Text>
                                     </Pressable>
                                 )}

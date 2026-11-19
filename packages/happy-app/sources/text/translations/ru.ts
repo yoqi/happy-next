@@ -1282,10 +1282,12 @@ export const ru: TranslationStructure = {
             codex: 'Codex',
             gemini: 'Gemini',
             qoder: 'Qoder',
+            antigravity: 'Antigravity',
             claudeDescription: 'By Anthropic, strong at complex coding',
             codexDescription: 'By OpenAI, powered by GPT',
             geminiDescription: 'By Google, long context',
             qoderDescription: 'By Alibaba, choose from many models',
+            antigravityDescription: 'От Google, агентное программирование в Antigravity',
             opencode: 'OpenCode',
         },
         model: {

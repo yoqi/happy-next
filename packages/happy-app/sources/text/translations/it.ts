@@ -1271,10 +1271,12 @@ export const it: TranslationStructure = {
             codex: 'Codex',
             gemini: 'Gemini',
             qoder: 'Qoder',
+            antigravity: 'Antigravity',
             claudeDescription: 'By Anthropic, strong at complex coding',
             codexDescription: 'By OpenAI, powered by GPT',
             geminiDescription: 'By Google, long context',
             qoderDescription: 'By Alibaba, choose from many models',
+            antigravityDescription: 'Di Google, coding agentico in Antigravity',
             opencode: 'OpenCode',
         },
         model: {

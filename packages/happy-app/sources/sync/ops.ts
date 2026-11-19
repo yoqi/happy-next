@@ -185,7 +185,7 @@ export interface SpawnSessionOptions {
     directory: string;
     approvedNewDirectoryCreation?: boolean;
     token?: string;
-    agent?: 'codex' | 'claude' | 'gemini' | 'qoder';
+    agent?: 'codex' | 'claude' | 'gemini' | 'qoder' | 'antigravity';
     resumeSessionId?: string;
     sessionTitle?: string;
     // The session this one is a copy of, named at the top of its backfilled history; its context
@@ -308,7 +308,7 @@ export async function machineSpawnNewSession(options: SpawnSessionOptions): Prom
  */
 export async function machineDiscoverCapabilities(
     machineId: string,
-    agent: 'claude' | 'codex' | 'gemini' | 'qoder',
+    agent: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity',
     directory: string
 ): Promise<SessionCapabilities> {
     const result = await apiSocket.machineRPC<unknown, { agent: string; directory: string }>(

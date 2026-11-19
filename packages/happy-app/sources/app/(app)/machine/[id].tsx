@@ -50,13 +50,14 @@ import { useMachineCliUpdate } from '@/hooks/useMachineCliUpdate';
 import { requestCliUpdateCheck } from '@/utils/cliUpdate';
 import { SessionProjectLabelsContext, useSessionProjectLabels } from '@/hooks/useSessionProjectLabel';
 
-type AgentType = 'claude' | 'codex' | 'gemini' | 'qoder';
+type AgentType = 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity';
 
 const AGENT_LABELS: Record<AgentType, string> = {
     claude: 'Claude',
     codex: 'Codex',
     gemini: 'Gemini',
     qoder: 'Qoder',
+    antigravity: 'Antigravity',
 };
 
 function resolveSessionModeForAgent(agent: AgentType) {
@@ -279,6 +280,7 @@ export default function MachineDetailScreen() {
         if (cliAvailability.codex === true) agents.push('codex');
         if (cliAvailability.gemini === true) agents.push('gemini');
         if (cliAvailability.qoder === true) agents.push('qoder');
+        if (cliAvailability.antigravity === true) agents.push('antigravity');
         return agents.length > 0 ? agents : ['claude'];
     }, [cliAvailability.timestamp, cliAvailability.claude, cliAvailability.codex, cliAvailability.gemini, cliAvailability.qoder]);
 

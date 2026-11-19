@@ -6,26 +6,31 @@ interface CLIAvailability {
     codex: boolean | null;
     gemini: boolean | null;
     qoder: boolean | null;
+    antigravity: boolean | null;
     isDetecting: boolean; // Explicit loading state
     timestamp: number; // When detection completed
     error?: string; // Detection error message (for debugging)
 }
+
+type AgentCLI = 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity';
 
 const CLI_DETECTION_COMMAND =
     '(command -v claude >/dev/null 2>&1 && echo "claude:true" || echo "claude:false") && ' +
     '(command -v codex >/dev/null 2>&1 && echo "codex:true" || echo "codex:false") && ' +
     '(command -v gemini >/dev/null 2>&1 && echo "gemini:true" || echo "gemini:false") && ' +
     // Qoder's installer puts qodercli (or the China build qoderclicn) in ~/.local/bin, which the daemon's PATH may lack
-    '((command -v qodercli || command -v qoderclicn || test -x ~/.local/bin/qodercli || test -x ~/.local/bin/qoderclicn) >/dev/null 2>&1 && echo "qoder:true" || echo "qoder:false")';
+    '((command -v qodercli || command -v qoderclicn || test -x ~/.local/bin/qodercli || test -x ~/.local/bin/qoderclicn) >/dev/null 2>&1 && echo "qoder:true" || echo "qoder:false") && ' +
+    // Antigravity CLI (`agy`) is also installed into ~/.local/bin by its installer.
+    '((command -v agy || test -x ~/.local/bin/agy) >/dev/null 2>&1 && echo "antigravity:true" || echo "antigravity:false")';
 
 function parseCLIOutput(stdout: string): CLIAvailability {
     const lines = stdout.trim().split('\n');
-    const cliStatus: { claude?: boolean; codex?: boolean; gemini?: boolean; qoder?: boolean } = {};
+    const cliStatus: Partial<Record<AgentCLI, boolean>> = {};
 
     lines.forEach(line => {
         const [cli, status] = line.split(':');
         if (cli && status) {
-            cliStatus[cli.trim() as 'claude' | 'codex' | 'gemini' | 'qoder'] = status.trim() === 'true';
+            cliStatus[cli.trim() as AgentCLI] = status.trim() === 'true';
         }
     });
 
@@ -34,13 +39,27 @@ function parseCLIOutput(stdout: string): CLIAvailability {
         codex: cliStatus.codex ?? null,
         gemini: cliStatus.gemini ?? null,
         qoder: cliStatus.qoder ?? null,
+        antigravity: cliStatus.antigravity ?? null,
         isDetecting: false,
         timestamp: Date.now(),
     };
 }
 
+function undetectedAvailability(isDetecting: boolean, error?: string): CLIAvailability {
+    return {
+        claude: null,
+        codex: null,
+        gemini: null,
+        qoder: null,
+        antigravity: null,
+        isDetecting,
+        timestamp: 0,
+        ...(error ? { error } : {}),
+    };
+}
+
 /**
- * Detects which CLI tools (claude, codex, gemini, qoder) are installed on a remote machine.
+ * Detects which CLI tools (claude, codex, gemini, qoder, antigravity) are installed on a remote machine.
  *
  * NON-BLOCKING: Detection runs asynchronously in useEffect. UI shows all profiles
  * while detection is in progress, then updates when results arrive.
@@ -53,27 +72,14 @@ function parseCLIOutput(stdout: string): CLIAvailability {
  * User discovers CLI availability when attempting to spawn.
  *
  * @param machineId - The machine to detect CLIs on (null = no detection)
- * @returns CLI availability status for claude, codex, gemini and qoder
- *
- * @example
- * const cliAvailability = useCLIDetection(selectedMachineId);
- * if (cliAvailability.claude === false) {
- *     // Show "Claude CLI not detected" warning
- * }
+ * @returns CLI availability status for the supported agents
  */
 export function useCLIDetection(machineId: string | null): CLIAvailability {
-    const [availability, setAvailability] = useState<CLIAvailability>({
-        claude: null,
-        codex: null,
-        gemini: null,
-        qoder: null,
-        isDetecting: false,
-        timestamp: 0,
-    });
+    const [availability, setAvailability] = useState<CLIAvailability>(() => undetectedAvailability(false));
 
     useEffect(() => {
         if (!machineId) {
-            setAvailability({ claude: null, codex: null, gemini: null, qoder: null, isDetecting: false, timestamp: 0 });
+            setAvailability(undetectedAvailability(false));
             return;
         }
 
@@ -94,20 +100,12 @@ export function useCLIDetection(machineId: string | null): CLIAvailability {
                     setAvailability(parseCLIOutput(result.stdout));
                 } else {
                     console.log('[useCLIDetection] Detection failed (success=false or exitCode!=0):', result);
-                    setAvailability({
-                        claude: null, codex: null, gemini: null, qoder: null,
-                        isDetecting: false, timestamp: 0,
-                        error: `Detection failed: ${result.stderr || 'Unknown error'}`,
-                    });
+                    setAvailability(undetectedAvailability(false, `Detection failed: ${result.stderr || 'Unknown error'}`));
                 }
             } catch (error) {
                 if (cancelled) return;
                 console.log('[useCLIDetection] Network/RPC error:', error);
-                setAvailability({
-                    claude: null, codex: null, gemini: null, qoder: null,
-                    isDetecting: false, timestamp: 0,
-                    error: error instanceof Error ? error.message : 'Detection error',
-                });
+                setAvailability(undetectedAvailability(false, error instanceof Error ? error.message : 'Detection error'));
             }
         };
 
@@ -147,7 +145,7 @@ export function useCLIDetectionBatch(machineIds: string[]): Record<string, CLIAv
         // Mark all as detecting synchronously
         const detecting: Record<string, CLIAvailability> = {};
         for (const id of ids) {
-            detecting[id] = { claude: null, codex: null, gemini: null, qoder: null, isDetecting: true, timestamp: 0 };
+            detecting[id] = undetectedAvailability(true);
         }
         setAvailabilityMap(detecting);
 
@@ -160,14 +158,14 @@ export function useCLIDetectionBatch(machineIds: string[]): Record<string, CLIAv
                 } else {
                     setAvailabilityMap(prev => ({
                         ...prev,
-                        [machineId]: { claude: null, codex: null, gemini: null, qoder: null, isDetecting: false, timestamp: 0 },
+                        [machineId]: undetectedAvailability(false),
                     }));
                 }
             }).catch(() => {
                 if (cancelled) return;
                 setAvailabilityMap(prev => ({
                     ...prev,
-                    [machineId]: { claude: null, codex: null, gemini: null, qoder: null, isDetecting: false, timestamp: 0 },
+                    [machineId]: undetectedAvailability(false),
                 }));
             });
         }

@@ -149,19 +149,19 @@ function NewSessionWizard() {
         machineIds,
     )));
 
-    const [agentType, setAgentType] = React.useState<'claude' | 'codex' | 'gemini' | 'qoder'>(() => {
+    const [agentType, setAgentType] = React.useState<'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity'>(() => {
         // Check if agent type was provided in temp data
         if (tempSessionData?.agentType) {
             return tempSessionData.agentType;
         }
-        if (lastUsedAgent === 'claude' || lastUsedAgent === 'codex' || lastUsedAgent === 'gemini' || lastUsedAgent === 'qoder') {
+        if (lastUsedAgent === 'claude' || lastUsedAgent === 'codex' || lastUsedAgent === 'gemini' || lastUsedAgent === 'qoder' || lastUsedAgent === 'antigravity') {
             return lastUsedAgent;
         }
         return 'claude';
     });
     const lastUsedSessionMode = useSessionModeLastUsed(agentType);
-    const manualPermissionModeByAgentRef = React.useRef<Partial<Record<'claude' | 'codex' | 'gemini' | 'qoder', PermissionMode>>>({});
-    const manualModelModeByAgentRef = React.useRef<Partial<Record<'claude' | 'codex' | 'gemini' | 'qoder', ModelMode>>>({});
+    const manualPermissionModeByAgentRef = React.useRef<Partial<Record<'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity', PermissionMode>>>({});
+    const manualModelModeByAgentRef = React.useRef<Partial<Record<'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity', ModelMode>>>({});
 
     // Persist agent selection changes (separate from setState to avoid race condition)
     // This runs after agentType state is updated, ensuring the value is stable
@@ -181,7 +181,8 @@ function NewSessionWizard() {
         const validCodexModes: PermissionMode[] = ['default', 'read-only', 'on-failure', 'full-auto'];
         const validGeminiModes: PermissionMode[] = ['default', 'auto_edit', 'plan', 'yolo'];
         const validQoderModes: PermissionMode[] = ['default', 'acceptEdits', 'auto', 'yolo'];
-        const validModes = agentType === 'codex' ? validCodexModes : agentType === 'gemini' ? validGeminiModes : agentType === 'qoder' ? validQoderModes : validClaudeModes;
+        const validAntigravityModes: PermissionMode[] = ['default', 'acceptEdits', 'auto', 'plan', 'yolo'];
+        const validModes = agentType === 'codex' ? validCodexModes : agentType === 'gemini' ? validGeminiModes : agentType === 'qoder' ? validQoderModes : agentType === 'antigravity' ? validAntigravityModes : validClaudeModes;
 
         if (mode && validModes.includes(mode as PermissionMode)) {
             return mode as PermissionMode;
@@ -523,7 +524,7 @@ function NewSessionWizard() {
     // machine (picking one would make the auto-correct below jump back to the first available agent).
     // Note: Does NOT persist immediately - persistence is handled by useEffect above
     const availableAgents = React.useMemo(() => (
-        (['claude', 'codex', 'gemini', 'qoder'] as const)
+        (['claude', 'codex', 'gemini', 'qoder', 'antigravity'] as const)
             .filter((agent) => agent === agentType || cliAvailability[agent] !== false)
     ), [cliAvailability, agentType]);
 
@@ -538,17 +539,18 @@ function NewSessionWizard() {
 
         if (agentAvailable === false) {
             // Current agent not available - find first available
-            const availableAgent: 'claude' | 'codex' | 'gemini' | 'qoder' =
+            const availableAgent: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity' =
                 cliAvailability.claude === true ? 'claude' :
                 cliAvailability.codex === true ? 'codex' :
                 cliAvailability.gemini === true ? 'gemini' :
                 cliAvailability.qoder === true ? 'qoder' :
+                cliAvailability.antigravity === true ? 'antigravity' :
                 'claude'; // Fallback to claude (will fail at spawn with clear error)
 
             console.warn(`[AgentSelection] ${agentType} not available, switching to ${availableAgent}`);
             setAgentType(availableAgent);
         }
-    }, [cliAvailability.timestamp, cliAvailability.claude, cliAvailability.codex, cliAvailability.gemini, cliAvailability.qoder, agentType]);
+    }, [cliAvailability.timestamp, cliAvailability.claude, cliAvailability.codex, cliAvailability.gemini, cliAvailability.qoder, cliAvailability.antigravity, agentType]);
 
     const selectedMachine = React.useMemo(() => {
         if (!selectedMachineId) return null;
@@ -558,7 +560,7 @@ function NewSessionWizard() {
     const { models: qoderModels, pending: qoderModelsPending } = useQoderModels(selectedMachineId, selectedPath || selectedMachine?.metadata?.homeDir || '', agentType === 'qoder');
     // Qoder models are per account and not in the catalog: a saved one is kept while the account still offers it.
     // Until the machine lists them, the stand-ins can't tell, so the saved one is kept rather than flashing Auto.
-    const isModelModeAvailable = (agent: 'claude' | 'codex' | 'gemini' | 'qoder', mode: string) => {
+    const isModelModeAvailable = (agent: 'claude' | 'codex' | 'gemini' | 'qoder' | 'antigravity', mode: string) => {
         if (agent !== 'qoder') return isModelModeForAgent(agent, mode);
         if (qoderModelsPending) return true;
         const { model, effort, contextWindow } = parseQoderModelMode(mode);
@@ -694,7 +696,8 @@ function NewSessionWizard() {
         const validCodexModes: PermissionMode[] = ['default', 'read-only', 'on-failure', 'full-auto'];
         const validGeminiModes: PermissionMode[] = ['default', 'auto_edit', 'plan', 'yolo'];
         const validQoderModes: PermissionMode[] = ['default', 'acceptEdits', 'auto', 'yolo'];
-        const validModes = agentType === 'codex' ? validCodexModes : agentType === 'gemini' ? validGeminiModes : agentType === 'qoder' ? validQoderModes : validClaudeModes;
+        const validAntigravityModes: PermissionMode[] = ['default', 'acceptEdits', 'auto', 'plan', 'yolo'];
+        const validModes = agentType === 'codex' ? validCodexModes : agentType === 'gemini' ? validGeminiModes : agentType === 'qoder' ? validQoderModes : agentType === 'antigravity' ? validAntigravityModes : validClaudeModes;
         const manualMode = manualPermissionModeByAgentRef.current[agentType];
 
         if (manualMode && validModes.includes(manualMode)) {

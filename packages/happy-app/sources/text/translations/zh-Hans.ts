@@ -1274,10 +1274,12 @@ export const zhHans: TranslationStructure = {
             codex: 'Codex',
             gemini: 'Gemini',
             qoder: 'Qoder',
+            antigravity: 'Antigravity',
             claudeDescription: 'Anthropic 出品，擅长复杂编程',
             codexDescription: 'OpenAI 出品，GPT 模型驱动',
             geminiDescription: 'Google 出品，超长上下文',
             qoderDescription: '阿里出品，可选多家模型',
+            antigravityDescription: 'Google 出品，在 Antigravity 中智能体编程',
             opencode: 'OpenCode',
         },
         model: {
