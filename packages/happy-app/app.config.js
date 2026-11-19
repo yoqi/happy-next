@@ -290,7 +290,7 @@ export default {
                 root: "./sources/app"
             },
             eas: {
-                projectId: "c25469ee-cbd3-483f-b673-d3538c469d9e"
+                projectId: "1d944ed8-7dc5-4a3c-bedd-c8b2e7d0213f"
             },
             app: {
                 postHogKey: process.env.EXPO_PUBLIC_POSTHOG_API_KEY
