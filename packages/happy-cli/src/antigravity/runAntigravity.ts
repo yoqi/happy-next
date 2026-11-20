@@ -476,7 +476,13 @@ export async function runAntigravity(opts: {
       return false;
     }
     desiredPermissionMode = mode;
-    if (antigravityBackend) await applyPermissionMode(antigravityBackend, mode);
+    if (antigravityBackend) {
+      if (isFullAccess(mode) !== backendFullAccess) {
+        await restartBackendForFullAccess(mode);
+      } else {
+        await applyPermissionMode(antigravityBackend, mode);
+      }
+    }
     return true;
   });
 
@@ -504,7 +510,7 @@ export async function runAntigravity(opts: {
 
   try {
     setThinking(!!resumeSessionId);
-    const replayed = await startBackend(resumeSessionId);
+    const replayed = await startBackend(resumeSessionId, desiredPermissionMode);
     const restored = !!resumeSessionId && antigravityBackend!.getSessionId() === resumeSessionId;
     if (restored) {
       for (let i = 0; i < 150 && !session.isConnected(); i++) {
@@ -560,7 +566,11 @@ export async function runAntigravity(opts: {
       setThinking(true);
 
       try {
-        if (!antigravityBackend) await startBackend();
+        if (!antigravityBackend) {
+          await startBackend(undefined, batch.mode.permissionMode);
+        } else if (isFullAccess(batch.mode.permissionMode) !== backendFullAccess) {
+          await restartBackendForFullAccess(batch.mode.permissionMode);
+        }
         const backend = antigravityBackend!;
         await applyPermissionMode(backend, batch.mode.permissionMode);
         const model = batch.mode.model ?? defaultModel;

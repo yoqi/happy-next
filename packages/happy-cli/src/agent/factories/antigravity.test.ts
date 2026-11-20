@@ -31,4 +31,13 @@ describe('createAntigravityBackend', () => {
       normalizeToolName,
     }));
   });
+
+  it('passes --dangerously-skip-permissions for full access', () => {
+    createAntigravityBackend({ cwd: '/work', dangerouslySkipPermissions: true });
+
+    expect(mocks.createBackend).toHaveBeenCalledWith(expect.objectContaining({
+      command: '/opt/antigravity/agy',
+      args: ['acp', '--dangerously-skip-permissions'],
+    }));
+  });
 });
