@@ -540,6 +540,20 @@ describe('Zod Transform - WOLOG Content Normalization', () => {
             }
         });
 
+        it('accepts acp messages from the antigravity provider', () => {
+            const raw = {
+                role: 'agent',
+                content: { type: 'acp', provider: 'antigravity', data: { type: 'message', message: 'Hello from Antigravity' } },
+            } as const;
+
+            const normalized = normalizeRawMessage('msg-antigravity', null, 790, raw as any);
+
+            expect(normalized?.role).toBe('agent');
+            if (normalized && normalized.role === 'agent') {
+                expect(normalized.content[0]).toMatchObject({ type: 'text', text: 'Hello from Antigravity' });
+            }
+        });
+
         it('maps acp [Plan Update] message to TodoWrite tool call/result', () => {
             const planPayload = {
                 explanation: null,
