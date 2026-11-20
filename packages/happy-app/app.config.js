@@ -297,6 +297,6 @@ export default {
             },
             doopush: dooPushConfig.runtimeConfig
         },
-        owner: "hitosea"
+        owner: "ggsky2018"
     }
 };
