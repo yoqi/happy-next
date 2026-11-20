@@ -24,6 +24,8 @@ export interface AntigravityBackendOptions extends AgentFactoryOptions {
   onReplayedUpdate?: (update: SessionNotification['update']) => void;
   /** Normalizes Happy's MCP tool names to the `mcp__happy__` form the app expects. */
   normalizeToolName?: (rawName: string) => string;
+  /** agy's own full-access flag; the ACP `mode` config option alone does not disable its prompts. */
+  dangerouslySkipPermissions?: boolean;
 }
 
 /** A generic transport is enough: agy reports tools with normal ACP names. */
@@ -49,7 +51,7 @@ export function createAntigravityBackend(options: AntigravityBackendOptions): Ac
     agentName: 'antigravity',
     cwd: options.cwd,
     command,
-    args: ['acp'],
+    args: options.dangerouslySkipPermissions ? ['acp', '--dangerously-skip-permissions'] : ['acp'],
     // Suppress debug chatter so it cannot pollute the ACP stdio stream.
     env: { ...options.env, NODE_ENV: 'production', DEBUG: '' },
     mcpServers: options.mcpServers,

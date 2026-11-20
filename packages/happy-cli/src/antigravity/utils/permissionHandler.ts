@@ -18,8 +18,15 @@ import { HAPPY_TOOLS_APPROVED_WITHOUT_ASKING_PREFIXED } from '@/agent/mcp/happyT
 export const HAPPY_TOOLS_APPROVED_WITHOUT_ASKING = HAPPY_TOOLS_APPROVED_WITHOUT_ASKING_PREFIXED;
 
 export class AntigravityPermissionHandler extends BasePermissionHandler {
+    /** Mirrors `agy --dangerously-skip-permissions`; when set, no request reaches the app. */
+    private fullAccess = false;
+
     constructor(session: ApiSessionClient, pushClient: PushNotificationClient) {
         super(session, pushClient);
+    }
+
+    setFullAccess(enabled: boolean): void {
+        this.fullAccess = enabled;
     }
 
     protected getLogPrefix(): string {
@@ -31,6 +38,9 @@ export class AntigravityPermissionHandler extends BasePermissionHandler {
     }
 
     async handleToolCall(toolCallId: string, toolName: string, toolInput: Record<string, unknown>): Promise<PermissionResult> {
+        if (this.fullAccess) {
+            return { decision: 'approved' };
+        }
         if (HAPPY_TOOLS_APPROVED_WITHOUT_ASKING.includes(toolName) || this.isShellCommandAllowed(toolName, toolInput)) {
             logger.debug(`${this.getLogPrefix()} Auto-approving ${toolName} (${toolCallId})`);
             return { decision: 'approved' };

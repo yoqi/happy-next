@@ -218,6 +218,8 @@ export async function runAntigravity(opts: {
   // Values agy last reported for its `mode` and `model` config options.
   let appliedMode: string | null = null;
   let appliedModel: string | null = null;
+  // Whether the running agy process was launched with --dangerously-skip-permissions.
+  let backendFullAccess = false;
   // The model a fresh agy session starts with, used when the app asks for the default.
   let defaultModel: string | null = null;
   // Usage of the latest turn, captured from ACP config updates.
@@ -363,13 +365,22 @@ export async function runAntigravity(opts: {
    * Starts `agy acp` and its ACP session, restoring `resumeSessionId` when given.
    * Returns the history agy replayed while restoring.
    */
-  const startBackend = async (resumeSessionId?: string): Promise<SessionNotification['update'][]> => {
+  // agy's ACP `mode` config option does not disable its own permission prompts for full access;
+  // only the process-level `--dangerously-skip-permissions` flag does. Restart agy when the app
+  // switches between full access and a mode that still asks, so the flag always matches the mode.
+  const isFullAccess = (mode: PermissionMode) => mode === 'yolo' || mode === 'bypassPermissions';
+
+  const startBackend = async (resumeSessionId?: string, permissionMode: PermissionMode = 'default'): Promise<SessionNotification['update'][]> => {
+    const dangerouslySkipPermissions = isFullAccess(permissionMode);
+    backendFullAccess = dangerouslySkipPermissions;
+    permissionHandler?.setFullAccess(dangerouslySkipPermissions);
     const replayed: SessionNotification['update'][] = [];
     const backend = createAntigravityBackend({
       cwd: process.cwd(),
       mcpServers,
       permissionHandler,
       resumeSessionId,
+      dangerouslySkipPermissions,
       onReplayedUpdate: (update) => replayed.push(update),
     });
     backend.onMessage(handleBackendMessage);
@@ -390,9 +401,29 @@ export async function runAntigravity(opts: {
   };
 
   const applyPermissionMode = async (backend: AcpBackend, mode: PermissionMode) => {
+    const fullAccess = isFullAccess(mode);
+    permissionHandler?.setFullAccess(fullAccess);
+    // The flag is process-level: if the full-access mode changed, respawn agy with (or without) it.
+    // The mode RPC handler below owns that swap; here we only apply ACP-side modes.
+    if (fullAccess) {
+      appliedMode = mode;
+      return;
+    }
     if (appliedMode === mode) return;
     const applied = await backend.setSessionConfigOption('mode', mode);
     logger.debug(`[Antigravity] Set mode ${mode}: ${applied}`);
+  };
+
+  /** Restart agy when the app toggles full access, keeping the same conversation via session/load. */
+  const restartBackendForFullAccess = async (mode: PermissionMode) => {
+    const current = antigravityBackend;
+    if (!current) return;
+    const resumeId = current.getSessionId() ?? undefined;
+    await current.dispose();
+    antigravityBackend = null;
+    permissionHandler.reset();
+    await startBackend(resumeId, mode);
+    logger.debug('[Antigravity] Restarted agy for permission mode', { mode, resumeId });
   };
 
   const promptImages = async (text: string, images: ImageContent[] | undefined) => images
