@@ -14,6 +14,7 @@ import { agentRegistry } from '../core';
 import { DefaultTransport } from '../transport';
 import { logger } from '@/ui/logger';
 import { resolveAntigravityCommand } from '@/antigravity/constants';
+import { getAntigravityProxyEnv } from '@/antigravity/proxyEnv';
 
 export interface AntigravityBackendOptions extends AgentFactoryOptions {
   mcpServers?: Record<string, McpServerConfig>;
@@ -52,8 +53,10 @@ export function createAntigravityBackend(options: AntigravityBackendOptions): Ac
     cwd: options.cwd,
     command,
     args: options.dangerouslySkipPermissions ? ['acp', '--dangerously-skip-permissions'] : ['acp'],
-    // Suppress debug chatter so it cannot pollute the ACP stdio stream.
-    env: { ...options.env, NODE_ENV: 'production', DEBUG: '' },
+    // Suppress debug chatter so it cannot pollute the ACP stdio stream, and pass
+    // through the proxy env (persisted from a terminal launch or exported in the
+    // shell) so every agy process reaches Google through the same egress.
+    env: { ...getAntigravityProxyEnv(), ...options.env, NODE_ENV: 'production', DEBUG: '' },
     mcpServers: options.mcpServers,
     permissionHandler: options.permissionHandler,
     transportHandler: antigravityTransport,

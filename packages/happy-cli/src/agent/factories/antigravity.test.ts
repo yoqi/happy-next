@@ -8,6 +8,9 @@ vi.mock('../acp/AcpBackend', () => ({
   },
 }));
 vi.mock('@/ui/logger', () => ({ logger: { debug: vi.fn(), warn: vi.fn() } }));
+vi.mock('@/antigravity/proxyEnv', () => ({
+  getAntigravityProxyEnv: () => ({ HTTP_PROXY: 'http://proxy.test:7890', HTTPS_PROXY: 'http://proxy.test:7890' }),
+}));
 vi.mock('@/antigravity/constants', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/antigravity/constants')>()),
   resolveAntigravityCommand: () => '/opt/antigravity/agy',
@@ -25,7 +28,7 @@ describe('createAntigravityBackend', () => {
       cwd: '/work',
       command: '/opt/antigravity/agy',
       args: ['acp'],
-      env: expect.objectContaining({ NODE_ENV: 'production', DEBUG: '', KEEP: '1' }),
+      env: expect.objectContaining({ NODE_ENV: 'production', DEBUG: '', KEEP: '1', HTTP_PROXY: 'http://proxy.test:7890', HTTPS_PROXY: 'http://proxy.test:7890' }),
       resumeSessionId: 'abc',
       onReplayedUpdate,
       normalizeToolName,

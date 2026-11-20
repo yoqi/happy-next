@@ -394,9 +394,18 @@ process.title = ['happy-next-cli', ...process.argv.slice(2)].join(' ');
     // Handle antigravity command (Google Antigravity CLI over ACP); `agy` is the upstream CLI name.
     try {
       const { runAntigravity } = await import('@/antigravity/runAntigravity');
+      const { persistAntigravityProxyEnv, restoreAntigravityProxyEnv } = await import('@/antigravity/proxyEnv');
 
       const startedByIndex = args.indexOf('--started-by');
       const startedBy = startedByIndex > 0 ? args[startedByIndex + 1] as 'daemon' | 'terminal' : undefined;
+
+      // Terminal launches carry the user's exported proxy; persist it so later
+      // daemon-spawned sessions (new session / model switch from the app) share it.
+      if (startedBy !== 'daemon') {
+        persistAntigravityProxyEnv();
+      }
+      // Restore on every antigravity process; an explicit shell export still wins.
+      restoreAntigravityProxyEnv();
 
       const { credentials } = await authAndSetupMachineIfNeeded();
 
