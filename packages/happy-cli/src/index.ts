@@ -390,8 +390,8 @@ process.title = ['happy-next-cli', ...process.argv.slice(2)].join(' ');
       process.exit(1)
     }
     return;
-  } else if (subcommand === 'antigravity') {
-    // Handle antigravity command (Google Antigravity CLI over ACP)
+  } else if (subcommand === 'antigravity' || subcommand === 'agy') {
+    // Handle antigravity command (Google Antigravity CLI over ACP); `agy` is the upstream CLI name.
     try {
       const { runAntigravity } = await import('@/antigravity/runAntigravity');
 
@@ -687,6 +687,7 @@ ${chalk.bold('Usage:')}
   happy gemini            Start Gemini mode (ACP)
   happy qoder             Start Qoder mode (ACP)
   happy antigravity       Start Antigravity mode (ACP)
+  happy agy               Alias for happy antigravity
   happy connect           Connect AI vendor API keys
   happy notify            Send push notification
   happy daemon            Manage background service

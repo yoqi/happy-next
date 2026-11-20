@@ -52,6 +52,13 @@ describe('resolveCliInvocation', () => {
     });
   });
 
+  it('routes the agy alias', () => {
+    expect(resolveCliInvocation(['agy'])).toEqual({
+      kind: 'happy-command',
+      command: 'agy',
+    });
+  });
+
   it('rejects a misspelled command and suggests the intended command', () => {
     expect(resolveCliInvocation(['deamon', 'start'])).toEqual({
       kind: 'unknown-command',
